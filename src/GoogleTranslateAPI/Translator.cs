@@ -1,5 +1,5 @@
 ﻿/**
- * Translater.cs
+ * Translator.cs
  *
  * Copyright (C) 2008,  iron9light
  *
@@ -27,10 +27,11 @@ using Newtonsoft.Json;
 
 namespace Google.API.Translate
 {
-    public class Translater
+    public class Translator
     {
         private static readonly Encoding ENCODING = Encoding.UTF8;
         private static readonly string translateUrl = "http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q={0}&langpair={1}%7C{2}";
+        private static readonly string detectUrl = "http://ajax.googleapis.com/ajax/services/language/detect?v=1.0&q={0}";
 
         public static string Translate(string text, Language from, Language to)
         {
@@ -42,16 +43,20 @@ namespace Google.API.Translate
             {
                 return string.Empty;
             }
+            TranslateResult result;
             try
             {
-                TranslateResult result =
-                    Translate(text, LanguageUtility.LanguageCodeDict[from], LanguageUtility.LanguageCodeDict[to]);
-                return result.ResponseData.TranslatedText;
+                result = Translate(text, LanguageUtility.GetLanguageCode(from), LanguageUtility.GetLanguageCode(to));
             }
-            catch (Exception ex)
+            catch (TranslateException ex)
             {
-                throw new Exception("Failed!", ex);
+                throw new TranslateException("Translate failed!", ex);
             }
+            if(result.ResponseData == null)
+            {
+                throw new TranslateException(result.ResponseDetails);
+            }
+            return result.ResponseData.TranslatedText;
         }
 
         public static TranslateResult Translate(string text, string from, string to)
@@ -72,6 +77,49 @@ namespace Google.API.Translate
         {
             string newText = HttpUtility.UrlEncode(text);
             string result = string.Format(translateUrl, newText, from, to);
+            return result;
+        }
+
+        public static Language Detect(string text, out bool isReliable, out double confidence)
+        {
+            DetectResult result;
+            try
+            {
+                result = Detect(text);
+            }
+            catch(TranslateException ex)
+            {
+                throw new TranslateException("Detect failed!", ex);
+            }
+            if(result.ResponseData == null)
+            {
+                throw new TranslateException(result.ResponseDetails);
+            }
+            string languageCode = result.ResponseData.LanguageCode;
+            isReliable = result.ResponseData.IsReliable;
+            confidence = result.ResponseData.Confidence;
+            Language language = LanguageUtility.GetLanguage(languageCode);
+            return language;
+        }
+
+        public static DetectResult Detect(string text)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+
+            string urlString = BuildDetectUrl(text);
+
+            DetectResult resultObject = GetResultObject<DetectResult>(urlString);
+
+            return resultObject;
+        }
+
+        static string BuildDetectUrl(string text)
+        {
+            string newText = HttpUtility.UrlEncode(text);
+            string result = string.Format(detectUrl, newText);
             return result;
         }
 

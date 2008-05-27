@@ -50,10 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DetectResult.cs" />
     <Compile Include="LanguageUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TranslateData.cs" />
-    <Compile Include="Translater.cs" />
+    <Compile Include="TranslateException.cs" />
+    <Compile Include="Translator.cs" />
     <Compile Include="ResultObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
