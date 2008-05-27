@@ -25,9 +25,12 @@ using System.Text;
 
 namespace Google.API.Translate
 {
+    /// <summary>
+    /// The enum of languages.
+    /// </summary>
     public enum Language
     {
-        Unknown,
+        Unknown = 0,
         Arabic,
         Bulgarian,
         Catalan,
@@ -71,7 +74,10 @@ namespace Google.API.Translate
         Vietnamese
     }
 
-    public class LanguageUtility
+    /// <summary>
+    /// Utility class for language and language codes.
+    /// </summary>
+    public static class LanguageUtility
     {
         private static readonly IDictionary<Language, string> s_LanguageCodeDict;
 
@@ -152,6 +158,9 @@ namespace Google.API.Translate
                 };
         }
 
+        /// <summary>
+        /// Get language code dictionary.
+        /// </summary>
         public static IDictionary<Language, string> LanguageCodeDict
         {
             get
@@ -160,6 +169,9 @@ namespace Google.API.Translate
             }
         }
 
+        /// <summary>
+        /// Get translatable languages.
+        /// </summary>
         public static IList<Language> Translatable
         {
             get
@@ -168,6 +180,11 @@ namespace Google.API.Translate
             }
         }
 
+        /// <summary>
+        /// Get language from a language code.
+        /// </summary>
+        /// <param name="languageCode">the language code</param>
+        /// <returns>the language of this code or unknown language if of language match this code</returns>
         public static Language GetLanguage(string languageCode)
         {
             languageCode = languageCode.Trim();
@@ -185,6 +202,26 @@ namespace Google.API.Translate
             return Language.Unknown;
         }
 
+        /// <summary>
+        /// Get the language code of a language.
+        /// </summary>
+        /// <param name="language">the language</param>
+        /// <returns>the language code of this language or code for unknown language</returns>
+        public static string GetLanguageCode(Language language)
+        {
+            string code;
+            if(!LanguageCodeDict.TryGetValue(language, out code))
+            {
+                code = LanguageCodeDict[Language.Unknown];
+            }
+            return code;
+        }
+
+        /// <summary>
+        /// Whether this language is translatable.
+        /// </summary>
+        /// <param name="language">the language</param>
+        /// <returns>return true if the language is translatable</returns>
         public static bool IsTranslatable(Language language)
         {
             return Translatable.Contains(language);
