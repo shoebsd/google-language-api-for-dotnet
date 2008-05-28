@@ -27,21 +27,32 @@ using Newtonsoft.Json;
 
 namespace Google.API.Translate
 {
+    /// <summary>
+    /// Utility class for translate and detect.
+    /// </summary>
     public class Translator
     {
         private static readonly Encoding ENCODING = Encoding.UTF8;
         private static readonly string translateUrl = "http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q={0}&langpair={1}%7C{2}";
         private static readonly string detectUrl = "http://ajax.googleapis.com/ajax/services/language/detect?v=1.0&q={0}";
 
+        /// <summary>
+        /// Translate the text from <paramref name="from"/> to <paramref name="to"/>
+        /// </summary>
+        /// <param name="text">the content will be translated</param>
+        /// <param name="from">the language of the original text. You can set it as <c>Language.Unknown</c> to the auto detect it.</param>
+        /// <param name="to">the target language you want to translate to.</param>
+        /// <returns>the translate result</returns>
+        /// <exception cref="TranslateException">bad luck.</exception>
         public static string Translate(string text, Language from, Language to)
         {
             if (from != Language.Unknown && !LanguageUtility.IsTranslatable(from))
             {
-                from = Language.Unknown;
+                throw new TranslateException("Can not translate this language : " + from);
             }
             if (!LanguageUtility.IsTranslatable(to))
             {
-                return string.Empty;
+                throw new TranslateException(string.Format("Can not translate this language to \"{0}\"", to));
             }
             TranslateResult result;
             try
@@ -59,7 +70,36 @@ namespace Google.API.Translate
             return result.ResponseData.TranslatedText;
         }
 
-        public static TranslateResult Translate(string text, string from, string to)
+        /// <summary>
+        /// Detect the language for this text.
+        /// </summary>
+        /// <param name="text">the text you want to test.</param>
+        /// <param name="isReliable">whether the result is reliable</param>
+        /// <param name="confidence">the confidence percent of the result</param>
+        /// <returns>the detected language</returns>
+        public static Language Detect(string text, out bool isReliable, out double confidence)
+        {
+            DetectResult result;
+            try
+            {
+                result = Detect(text);
+            }
+            catch (TranslateException ex)
+            {
+                throw new TranslateException("Detect failed!", ex);
+            }
+            if (result.ResponseData == null)
+            {
+                throw new TranslateException(result.ResponseDetails);
+            }
+            string languageCode = result.ResponseData.LanguageCode;
+            isReliable = result.ResponseData.IsReliable;
+            confidence = result.ResponseData.Confidence;
+            Language language = LanguageUtility.GetLanguage(languageCode);
+            return language;
+        }
+
+        internal static TranslateResult Translate(string text, string from, string to)
         {
             if (text == null)
             {
@@ -73,36 +113,7 @@ namespace Google.API.Translate
             return resultObject;
         }
 
-        static string BuildTranslateUrl(string text, string from, string to)
-        {
-            string newText = HttpUtility.UrlEncode(text);
-            string result = string.Format(translateUrl, newText, from, to);
-            return result;
-        }
-
-        public static Language Detect(string text, out bool isReliable, out double confidence)
-        {
-            DetectResult result;
-            try
-            {
-                result = Detect(text);
-            }
-            catch(TranslateException ex)
-            {
-                throw new TranslateException("Detect failed!", ex);
-            }
-            if(result.ResponseData == null)
-            {
-                throw new TranslateException(result.ResponseDetails);
-            }
-            string languageCode = result.ResponseData.LanguageCode;
-            isReliable = result.ResponseData.IsReliable;
-            confidence = result.ResponseData.Confidence;
-            Language language = LanguageUtility.GetLanguage(languageCode);
-            return language;
-        }
-
-        public static DetectResult Detect(string text)
+        internal static DetectResult Detect(string text)
         {
             if (text == null)
             {
@@ -116,14 +127,21 @@ namespace Google.API.Translate
             return resultObject;
         }
 
-        static string BuildDetectUrl(string text)
+        private static string BuildTranslateUrl(string text, string from, string to)
+        {
+            string newText = HttpUtility.UrlEncode(text);
+            string result = string.Format(translateUrl, newText, from, to);
+            return result;
+        }
+
+        private static string BuildDetectUrl(string text)
         {
             string newText = HttpUtility.UrlEncode(text);
             string result = string.Format(detectUrl, newText);
             return result;
         }
 
-        static TResult GetResultObject<TResult>(string url)
+        private static TResult GetResultObject<TResult>(string url)
         {
             WebRequest request = WebRequest.Create(url);
             TResult resultObject;

@@ -23,7 +23,7 @@ using Newtonsoft.Json;
 namespace Google.API.Translate
 {
     [JsonObject(MemberSerialization.OptOut)]
-    public class DetectResult : ResultObject
+    internal class DetectResult : ResultObject
     {
         [JsonObject(MemberSerialization.OptOut)]
         public class DetectData
