@@ -18,10 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Google.API.Translate
 {
@@ -81,7 +78,7 @@ namespace Google.API.Translate
     {
         private static readonly IDictionary<Language, string> s_LanguageCodeDict;
 
-        private static readonly IList<Language> s_Translatable;
+        private static readonly IList<Language> s_TranslatableList;
 
         static LanguageUtility()
         {
@@ -129,7 +126,7 @@ namespace Google.API.Translate
             s_LanguageCodeDict[Language.Ukranian] = "uk";
             s_LanguageCodeDict[Language.Vietnamese] = "vi";
 
-            s_Translatable = new Language[]
+            s_TranslatableList = new Language[]
                 {
                     Language.Arabic,
                     Language.Bulgarian,
@@ -159,9 +156,31 @@ namespace Google.API.Translate
         }
 
         /// <summary>
+        /// Get translatable language collection.
+        /// </summary>
+        public static ICollection<Language> translatableCollection
+        {
+            get
+            {
+                return s_TranslatableList;
+            }
+        }
+
+        /// <summary>
+        /// Get language collection.
+        /// </summary>
+        public static ICollection<Language> languageCollection
+        {
+            get
+            {
+                return LanguageCodeDict.Keys;
+            }
+        }
+
+        /// <summary>
         /// Get language code dictionary.
         /// </summary>
-        public static IDictionary<Language, string> LanguageCodeDict
+        internal static IDictionary<Language, string> LanguageCodeDict
         {
             get
             {
@@ -170,14 +189,13 @@ namespace Google.API.Translate
         }
 
         /// <summary>
-        /// Get translatable languages.
+        /// Whether this language is translatable.
         /// </summary>
-        public static IList<Language> Translatable
+        /// <param name="language">the language</param>
+        /// <returns>return true if the language is translatable</returns>
+        public static bool IsTranslatable(Language language)
         {
-            get
-            {
-                return s_Translatable;
-            }
+            return translatableCollection.Contains(language);
         }
 
         /// <summary>
@@ -185,7 +203,7 @@ namespace Google.API.Translate
         /// </summary>
         /// <param name="languageCode">the language code</param>
         /// <returns>the language of this code or unknown language if of language match this code</returns>
-        public static Language GetLanguage(string languageCode)
+        internal static Language GetLanguage(string languageCode)
         {
             languageCode = languageCode.Trim();
             if(string.IsNullOrEmpty(languageCode))
@@ -199,6 +217,10 @@ namespace Google.API.Translate
                     return pair.Key;
                 }
             }
+            if (string.Compare(languageCode, "zh-Hant", true) == 0)
+            {
+                return Language.Chinese_Traditional;
+            }
             return Language.Unknown;
         }
 
@@ -207,7 +229,7 @@ namespace Google.API.Translate
         /// </summary>
         /// <param name="language">the language</param>
         /// <returns>the language code of this language or code for unknown language</returns>
-        public static string GetLanguageCode(Language language)
+        internal static string GetLanguageCode(Language language)
         {
             string code;
             if(!LanguageCodeDict.TryGetValue(language, out code))
@@ -215,16 +237,6 @@ namespace Google.API.Translate
                 code = LanguageCodeDict[Language.Unknown];
             }
             return code;
-        }
-
-        /// <summary>
-        /// Whether this language is translatable.
-        /// </summary>
-        /// <param name="language">the language</param>
-        /// <returns>return true if the language is translatable</returns>
-        public static bool IsTranslatable(Language language)
-        {
-            return Translatable.Contains(language);
         }
     }
 }
