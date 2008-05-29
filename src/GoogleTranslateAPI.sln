@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{662A8C9D-D42
 	ProjectSection(SolutionItems) = preProject
 		lib\Newtonsoft.Json.dll = lib\Newtonsoft.Json.dll
 		lib\Newtonsoft.Json.XML = lib\Newtonsoft.Json.XML
+		lib\nunit.framework.dll = lib\nunit.framework.dll
+		lib\nunit.framework.xml = lib\nunit.framework.xml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleTranslateAPI.Test", "GoogleTranslateAPI.Test\GoogleTranslateAPI.Test.csproj", "{3679CA26-90FF-44A0-A5A0-D74917008E07}"

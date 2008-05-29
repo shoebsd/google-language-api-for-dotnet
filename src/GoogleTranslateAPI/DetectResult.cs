@@ -29,16 +29,16 @@ namespace Google.API.Translate
         public class DetectData
         {
             [JsonProperty("language")]
-            public string LanguageCode { get; set; }
+            public string LanguageCode { get; private set; }
 
             [JsonProperty("isReliable")]
-            public bool IsReliable { get; set; }
+            public bool IsReliable { get; private set; }
 
             [JsonProperty("confidence")]
-            public double Confidence { get; set; }
+            public double Confidence { get; private set; }
         }
 
         [JsonProperty("responseData")]
-        public DetectData ResponseData { get; set; }
+        public DetectData ResponseData { get; private set; }
     }
 }

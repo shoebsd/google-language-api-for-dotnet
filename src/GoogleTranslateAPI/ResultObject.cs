@@ -26,9 +26,9 @@ namespace Google.API.Translate
     internal class ResultObject
     {
         [JsonProperty("responseDetails")]
-        public string ResponseDetails { get; set; }
+        public string ResponseDetails { get; private set; }
 
         [JsonProperty("responseStatus")]
-        public string ResponseStatus { get; set; }
+        public string ResponseStatus { get; private set; }
     }
 }
