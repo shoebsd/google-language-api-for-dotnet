@@ -28,41 +28,17 @@ namespace Google.API.Translate
         [JsonObject(MemberSerialization.OptOut)]
         public class DetectData
         {
-            private string m_LanguageCode;
-
-            private bool m_IsReliable;
-
-            private double m_Confidence;
-
             [JsonProperty("language")]
-            public string LanguageCode
-            {
-                get { return m_LanguageCode; }
-                set { m_LanguageCode = value; }
-            }
+            public string LanguageCode { get; set; }
 
             [JsonProperty("isReliable")]
-            public bool IsReliable
-            {
-                get { return m_IsReliable; }
-                set { m_IsReliable = value; }
-            }
+            public bool IsReliable { get; set; }
 
             [JsonProperty("confidence")]
-            public double Confidence
-            {
-                get { return m_Confidence; }
-                set { m_Confidence = value; }
-            }
+            public double Confidence { get; set; }
         }
-
-        private DetectData m_ResponseData;
 
         [JsonProperty("responseData")]
-        public DetectData ResponseData
-        {
-            get { return m_ResponseData; }
-            set { m_ResponseData = value; }
-        }
+        public DetectData ResponseData { get; set; }
     }
 }
