@@ -29,13 +29,13 @@ namespace Google.API.Translate
         public class TranslateData
         {
             [JsonProperty("translatedText")]
-            public string TranslatedText { get; set; }
+            public string TranslatedText { get; private set; }
 
             [JsonProperty("detectedSourceLanguage")]
-            public string DetectedSourceLanguage { get; set; }
+            public string DetectedSourceLanguage { get; private set; }
         }
 
         [JsonProperty("responseData")]
-        public TranslateData ResponseData { get; set; }
+        public TranslateData ResponseData { get; private set; }
     }
 }
