@@ -28,32 +28,14 @@ namespace Google.API.Translate
         [JsonObject(MemberSerialization.OptOut)]
         public class TranslateData
         {
-            private string m_TranslatedText;
-
-            private string m_DetectedSourceLanguage;
-
             [JsonProperty("translatedText")]
-            public string TranslatedText
-            {
-                get { return m_TranslatedText; }
-                set { m_TranslatedText = value; }
-            }
+            public string TranslatedText { get; set; }
 
             [JsonProperty("detectedSourceLanguage")]
-            public string DetectedSourceLanguage
-            {
-                get { return m_DetectedSourceLanguage; }
-                set { m_DetectedSourceLanguage = value; }
-            }
+            public string DetectedSourceLanguage { get; set; }
         }
-
-        private TranslateData m_ResponseData;
 
         [JsonProperty("responseData")]
-        public TranslateData ResponseData
-        {
-            get { return m_ResponseData; }
-            set { m_ResponseData = value; }
-        }
+        public TranslateData ResponseData { get; set; }
     }
 }

@@ -25,22 +25,10 @@ namespace Google.API.Translate
     [JsonObject(MemberSerialization.OptOut)]
     internal class ResultObject
     {
-        private string m_ResponseDetails;
-
-        private string m_ResponseStatus;
-
         [JsonProperty("responseDetails")]
-        public string ResponseDetails
-        {
-            get { return m_ResponseDetails; }
-            set { m_ResponseDetails = value; }
-        }
+        public string ResponseDetails { get; set; }
 
         [JsonProperty("responseStatus")]
-        public string ResponseStatus
-        {
-            get { return m_ResponseStatus; }
-            set { m_ResponseStatus = value; }
-        }
+        public string ResponseStatus { get; set; }
     }
 }
