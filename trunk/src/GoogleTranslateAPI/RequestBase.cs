@@ -27,7 +27,7 @@ using System.Web;
 
 namespace Google.API.Translate
 {
-    public abstract class RequestBase
+    internal abstract class RequestBase
     {
         private string m_UrlString;
 

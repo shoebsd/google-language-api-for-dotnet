@@ -26,6 +26,12 @@ using Newtonsoft.Json;
 
 namespace Google.API.Translate
 {
+    public enum TranslateFormat
+    {
+        text,
+        html,
+    }
+
     /// <summary>
     /// Utility class for translate and detect.
     /// </summary>
@@ -43,6 +49,20 @@ namespace Google.API.Translate
         /// <exception cref="TranslateException">bad luck.</exception>
         public static string Translate(string text, Language from, Language to)
         {
+            return Translate(text, from, to, TranslateFormat.text);
+        }
+
+        /// <summary>
+        /// Translate the text from <paramref name="from"/> to <paramref name="to"/>
+        /// </summary>
+        /// <param name="text">the content will be translated</param>
+        /// <param name="from">the language of the original text. You can set it as <c>Language.Unknown</c> to the auto detect it.</param>
+        /// <param name="to">the target language you want to translate to.</param>
+        /// <param name="format">The format of the text.</param>
+        /// <returns>the translate result</returns>
+        /// <exception cref="TranslateException">bad luck.</exception>
+        public static string Translate(string text, Language from, Language to, TranslateFormat format)
+        {
             if (from != Language.Unknown && !LanguageUtility.IsTranslatable(from))
             {
                 throw new TranslateException("Can not translate this language : " + from);
@@ -54,7 +74,7 @@ namespace Google.API.Translate
             TranslateData result;
             try
             {
-                result = Translate(text, LanguageUtility.GetLanguageCode(from), LanguageUtility.GetLanguageCode(to));
+                result = Translate(text, LanguageUtility.GetLanguageCode(from), LanguageUtility.GetLanguageCode(to), format);
             }
             catch (TranslateException ex)
             {
@@ -88,7 +108,12 @@ namespace Google.API.Translate
             return language;
         }
 
-        public static TranslateData Translate(string text, string from, string to)
+        internal static TranslateData Translate(string text, string from, string to)
+        {
+            return Translate(text, from, to, TranslateFormat.text);
+        }
+
+        internal static TranslateData Translate(string text, string from, string to, TranslateFormat format)
         {
             if (text == null)
             {
@@ -106,7 +131,7 @@ namespace Google.API.Translate
             //string urlString = BuildTranslateUrl(text, from, to);
             //TranslateData responseData = GetResponseData<TranslateData>(urlString);
 
-            TranslateRequest request = new TranslateRequest(text, from, to);
+            TranslateRequest request = new TranslateRequest(text, from, to, format);
             TranslateData responseData;
             try
             {
@@ -120,7 +145,7 @@ namespace Google.API.Translate
             return responseData;
         }
 
-        public static DetectData Detect(string text)
+        internal static DetectData Detect(string text)
         {
             if (text == null)
             {
@@ -141,7 +166,7 @@ namespace Google.API.Translate
             return responseData;
         }
 
-        private static T GetResponseData<T>(WebRequest request)
+        internal static T GetResponseData<T>(WebRequest request)
         {
             if (request == null)
             {
@@ -174,7 +199,7 @@ namespace Google.API.Translate
             return resultObject.ResponseData;
         }
 
-        private static T GetResponseData<T>(string url)
+        internal static T GetResponseData<T>(string url)
         {
             if (url == null)
             {

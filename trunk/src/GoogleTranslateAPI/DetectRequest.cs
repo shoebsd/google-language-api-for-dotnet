@@ -20,7 +20,7 @@
 
 namespace Google.API.Translate
 {
-    public class DetectRequest : RequestBase
+    internal class DetectRequest : RequestBase
     {
         private static readonly string s_BaseAddress = @"http://ajax.googleapis.com/ajax/services/language/detect";
 
