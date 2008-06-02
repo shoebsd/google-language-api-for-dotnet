@@ -22,7 +22,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Web;
 using Newtonsoft.Json;
 
 namespace Google.API.Translate
@@ -33,8 +32,6 @@ namespace Google.API.Translate
     public class Translator
     {
         private static readonly Encoding ENCODING = Encoding.UTF8;
-        private static readonly string translateUrl = "http://ajax.googleapis.com/ajax/services/language/translate?v=1.0&q={0}&langpair={1}%7C{2}";
-        private static readonly string detectUrl = "http://ajax.googleapis.com/ajax/services/language/detect?v=1.0&q={0}";
 
         /// <summary>
         /// Translate the text from <paramref name="from"/> to <paramref name="to"/>
@@ -54,7 +51,7 @@ namespace Google.API.Translate
             {
                 throw new TranslateException(string.Format("Can not translate this language to \"{0}\"", to));
             }
-            TranslateResult result;
+            TranslateData result;
             try
             {
                 result = Translate(text, LanguageUtility.GetLanguageCode(from), LanguageUtility.GetLanguageCode(to));
@@ -63,11 +60,7 @@ namespace Google.API.Translate
             {
                 throw new TranslateException("Translate failed!", ex);
             }
-            if(result.ResponseData == null)
-            {
-                throw new TranslateException(result.ResponseDetails);
-            }
-            return result.ResponseData.TranslatedText;
+            return result.TranslatedText;
         }
 
         /// <summary>
@@ -79,7 +72,7 @@ namespace Google.API.Translate
         /// <returns>the detected language</returns>
         public static Language Detect(string text, out bool isReliable, out double confidence)
         {
-            DetectResult result;
+            DetectData result;
             try
             {
                 result = Detect(text);
@@ -88,72 +81,107 @@ namespace Google.API.Translate
             {
                 throw new TranslateException("Detect failed!", ex);
             }
-            if (result.ResponseData == null)
-            {
-                throw new TranslateException(result.ResponseDetails);
-            }
-            string languageCode = result.ResponseData.LanguageCode;
-            isReliable = result.ResponseData.IsReliable;
-            confidence = result.ResponseData.Confidence;
+            string languageCode = result.LanguageCode;
+            isReliable = result.IsReliable;
+            confidence = result.Confidence;
             Language language = LanguageUtility.GetLanguage(languageCode);
             return language;
         }
 
-        internal static TranslateResult Translate(string text, string from, string to)
+        public static TranslateData Translate(string text, string from, string to)
+        {
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            if (from == null)
+            {
+                throw new ArgumentNullException("from");
+            }
+            if (to == null)
+            {
+                throw new ArgumentNullException("to");
+            }
+
+            //string urlString = BuildTranslateUrl(text, from, to);
+            //TranslateData responseData = GetResponseData<TranslateData>(urlString);
+
+            TranslateRequest request = new TranslateRequest(text, from, to);
+            TranslateData responseData;
+            try
+            {
+                responseData = GetResponseData<TranslateData>(request.GetWebRequest());
+            }
+            catch (TranslateException ex)
+            {
+                throw new TranslateException(string.Format("request:\"{0}\"", request), ex);
+            }
+
+            return responseData;
+        }
+
+        public static DetectData Detect(string text)
         {
             if (text == null)
             {
                 throw new ArgumentNullException("text");
             }
 
-            string urlString = BuildTranslateUrl(text, from, to);
-
-            TranslateResult resultObject = GetResultObject<TranslateResult>(urlString);
-
-            return resultObject;
-        }
-
-        internal static DetectResult Detect(string text)
-        {
-            if (text == null)
+            DetectRequest request = new DetectRequest(text);
+            DetectData responseData;
+            try
             {
-                throw new ArgumentNullException("text");
+                responseData = GetResponseData<DetectData>(request.GetWebRequest());
+            }
+            catch(TranslateException ex)
+            {
+                throw new TranslateException(string.Format("request:\"{0}\"", request), ex);
             }
 
-            string urlString = BuildDetectUrl(text);
-
-            DetectResult resultObject = GetResultObject<DetectResult>(urlString);
-
-            return resultObject;
+            return responseData;
         }
 
-        private static string BuildTranslateUrl(string text, string from, string to)
+        private static T GetResponseData<T>(WebRequest request)
         {
-            string newText = HttpUtility.UrlEncode(text);
-            string result = string.Format(translateUrl, newText, from, to);
-            return result;
-        }
-
-        private static string BuildDetectUrl(string text)
-        {
-            string newText = HttpUtility.UrlEncode(text);
-            string result = string.Format(detectUrl, newText);
-            return result;
-        }
-
-        private static TResult GetResultObject<TResult>(string url)
-        {
-            WebRequest request = WebRequest.Create(url);
-            TResult resultObject;
-            using (WebResponse response = request.GetResponse())
+            if (request == null)
             {
-                using (StreamReader reader = new StreamReader(response.GetResponseStream(), ENCODING))
+                throw new ArgumentNullException("request");
+            }
+            string resultString;
+            try
+            {
+                using (WebResponse response = request.GetResponse())
                 {
-                    string resultString = reader.ReadToEnd();
-                    resultObject = JavaScriptConvert.DeserializeObject<TResult>(resultString);
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ENCODING))
+                    {
+                        resultString = reader.ReadToEnd();
+                    }
                 }
             }
-            return resultObject;
+            catch (WebException ex)
+            {
+                throw new TranslateException("Failed to get response.", ex);
+            }
+            catch (IOException ex)
+            {
+                throw new TranslateException("Cannot read the response stream.", ex);
+            }
+            ResultObject<T> resultObject = JavaScriptConvert.DeserializeObject<ResultObject<T>>(resultString);
+            if (resultObject.ResponseStatus != 200)
+            {
+                throw new TranslateException(string.Format("[error code:{0}]{1}", resultObject.ResponseStatus, resultObject.ResponseDetails));
+            }
+            return resultObject.ResponseData;
+        }
+
+        private static T GetResponseData<T>(string url)
+        {
+            if (url == null)
+            {
+                throw new ArgumentNullException("url");
+            }
+            WebRequest request = WebRequest.Create(url);
+            return GetResponseData<T>(request);
         }
     }
 }
