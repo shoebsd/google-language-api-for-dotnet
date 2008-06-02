@@ -29,7 +29,11 @@ namespace Google.API.Translate
 {
     internal abstract class RequestBase
     {
+        #region Fields
+
         private string m_UrlString;
+
+        #endregion
 
         #region Constructors
 
@@ -135,7 +139,7 @@ namespace Google.API.Translate
                 }
                 if (value == null)
                 {
-                    throw new Exception(string.Format("Property {0}({1}) cannot be null", info.Name, name));
+                    throw new TranslateException(string.Format("Property {0}({1}) cannot be null", info.Name, name));
                 }
 
                 string valueString = value.ToString();
