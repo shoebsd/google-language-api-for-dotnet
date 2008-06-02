@@ -52,7 +52,7 @@
   <ItemGroup>
     <Compile Include="ArgumentAttribute.cs" />
     <Compile Include="DetectRequest.cs" />
-    <Compile Include="DetectResult.cs" />
+    <Compile Include="DetectData.cs" />
     <Compile Include="LanguageUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestBase.cs" />
