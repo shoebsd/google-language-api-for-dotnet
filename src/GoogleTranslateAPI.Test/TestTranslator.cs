@@ -46,7 +46,7 @@ namespace Google.API.Translate.Test
 
             foreach (Language language in LanguageUtility.translatableCollection)
             {
-                if(language == originalLanguage)
+                if (language == originalLanguage)
                 {
                     continue;
                 }
@@ -61,6 +61,35 @@ namespace Google.API.Translate.Test
                 StringAssert.AreEqualIgnoringCase(originalText, transbackText, "[{0} -> {1}] {2} -> {3} != {4}: translate faild!",
                                 language, originalLanguage, translatedText, transbackText, originalText);
             }
+        }
+
+        [Test]
+        public void TranslateTestForHtml()
+        {
+            // TODO : The test case TranslateTestForHtml is not stable. There may add some space after being translated.
+            
+            Language from = Language.English;
+            Language to = Language.Chinese_Simplified;
+
+            string textTemplate =
+                "<html><head><title>{0} </title></head><body> <b>{1}</b> </body></html>";
+
+            string sentenceA = "You are my sunshine.";
+            string sentenceB = "Show me the money.";
+
+            string text = string.Format(textTemplate, sentenceA, sentenceB);
+
+            string translatedA = Translator.Translate(sentenceA, from, to);
+
+            string translatedB = Translator.Translate(sentenceB, from, to);
+
+            string translatedText = Translator.Translate(text, from, to, TranslateFormat.html);
+
+            string expectedText = string.Format(textTemplate, translatedA, translatedB);
+
+            StringAssert.AreEqualIgnoringCase(expectedText, translatedText,
+                                              string.Format("expected:\t{1}{0}actual:\t{2}", Environment.NewLine,
+                                                            expectedText, translatedText));
         }
 
         [Test]

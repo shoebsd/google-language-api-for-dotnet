@@ -20,13 +20,7 @@
 
 namespace Google.API.Translate
 {
-    public enum TranslateFormat
-    {
-        text,
-        html,
-    }
-
-    public class TranslateRequest : RequestBase
+    internal class TranslateRequest : RequestBase
     {
         private static readonly string s_BaseAddress = @"http://ajax.googleapis.com/ajax/services/language/translate";
         private static readonly string s_LangpairFormat = "{0}%7C{1}";
