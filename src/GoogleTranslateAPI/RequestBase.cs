@@ -1,18 +1,35 @@
-﻿using System;
+﻿/**
+ * RequestBase.cs
+ *
+ * Copyright (C) 2008,  iron9light
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Web;
 
 namespace Google.API.Translate
 {
     public abstract class RequestBase
     {
-        private ICollection<KeyValuePair<string, string>> m_Arguments;
         private string m_UrlString;
-        protected abstract string AddressBase { get; }
 
         #region Constructors
 
@@ -36,7 +53,9 @@ namespace Google.API.Translate
 
         #endregion
 
-        [Argument("p", Optional = false)]
+        #region Properties
+
+        [Argument("q", Optional = false, NeedEncode = true)]
         public string Content { get; private set; }
 
         [Argument("v", "1.0")]
@@ -49,7 +68,7 @@ namespace Google.API.Translate
         {
             get
             {
-                if(m_UrlString == null)
+                if (m_UrlString == null)
                 {
                     m_UrlString = GetUrlString();
                 }
@@ -65,27 +84,34 @@ namespace Google.API.Translate
             }
         }
 
+        protected abstract string BaseAddress { get; }
+
+        private ICollection<KeyValuePair<string, string>> Arguments
+        {
+            get
+            {
+                return GetArguments();
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
         public WebRequest GetWebRequest()
         {
             return WebRequest.Create(UrlString);
         }
 
-        ICollection<KeyValuePair<string, string>> Arguments
+        public override string ToString()
         {
-            get
-            {
-                if (m_Arguments == null)
-                {
-                    m_Arguments = GetArguments();
-                }
-                return m_Arguments;
-            }
+            return UrlString;
         }
 
-        ICollection<KeyValuePair<string, string>> GetArguments()
+        private ICollection<KeyValuePair<string, string>> GetArguments()
         {
             Dictionary<string, string> dict = new Dictionary<string, string>();
-            PropertyInfo[] properties = this.GetType().GetProperties();
+            PropertyInfo[] properties = this.GetType().GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
             foreach (PropertyInfo info in properties)
             {
                 object[] attrs = info.GetCustomAttributes(typeof(ArgumentAttribute), true);
@@ -112,20 +138,27 @@ namespace Google.API.Translate
                     throw new Exception(string.Format("Property {0}({1}) cannot be null", info.Name, name));
                 }
 
-                dict[name] = value.ToString();
+                string valueString = value.ToString();
+
+                if (argAttr.NeedEncode)
+                {
+                    valueString = HttpUtility.UrlEncode(valueString);
+                }
+
+                dict[name] = valueString;
 
             }
             return dict;
         }
 
-        string GetUrlString()
+        private string GetUrlString()
         {
             if (Arguments.Count == 0)
             {
-                return AddressBase;
+                return BaseAddress;
             }
 
-            StringBuilder sb = new StringBuilder(AddressBase);
+            StringBuilder sb = new StringBuilder(BaseAddress);
             sb.Append("?");
             bool isFirst = true;
             foreach (KeyValuePair<string, string> argument in Arguments)
@@ -140,9 +173,11 @@ namespace Google.API.Translate
                 }
                 sb.Append(argument.Key);
                 sb.Append("=");
-                sb.Append(HttpUtility.UrlEncode(argument.Value));
+                sb.Append(argument.Value);
             }
             return sb.ToString();
         }
+
+        #endregion
     }
 }

@@ -51,12 +51,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArgumentAttribute.cs" />
+    <Compile Include="DetectRequest.cs" />
     <Compile Include="DetectResult.cs" />
     <Compile Include="LanguageUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestBase.cs" />
     <Compile Include="TranslateData.cs" />
     <Compile Include="TranslateException.cs" />
+    <Compile Include="TranslateRequest.cs" />
     <Compile Include="Translator.cs" />
     <Compile Include="ResultObject.cs" />
   </ItemGroup>

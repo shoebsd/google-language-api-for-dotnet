@@ -1,5 +1,5 @@
 ﻿/**
- * TranslateException.cs
+ * DetectRequest.cs
  *
  * Copyright (C) 2008,  iron9light
  *
@@ -18,21 +18,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-using System;
-
 namespace Google.API.Translate
 {
-    public class TranslateException : Exception
+    public class DetectRequest : RequestBase
     {
-        public TranslateException(string message, Exception innerException)
-            : base(message, innerException)
+        private static readonly string s_BaseAddress = @"http://ajax.googleapis.com/ajax/services/language/detect";
+
+        public DetectRequest(string text)
+            : base(text)
         { }
 
-        public TranslateException(string message)
-            : base(message)
-        { }
-
-        public TranslateException()
-        { }
+        protected override string BaseAddress
+        {
+            get { return s_BaseAddress; }
+        }
     }
 }

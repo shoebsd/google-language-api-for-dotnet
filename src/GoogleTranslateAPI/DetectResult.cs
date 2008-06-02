@@ -1,5 +1,5 @@
 ﻿/**
- * DetectResult.cs
+ * DetectData.cs
  *
  * Copyright (C) 2008,  iron9light
  *
@@ -23,22 +23,15 @@ using Newtonsoft.Json;
 namespace Google.API.Translate
 {
     [JsonObject(MemberSerialization.OptOut)]
-    internal class DetectResult : ResultObject
+    public class DetectData
     {
-        [JsonObject(MemberSerialization.OptOut)]
-        public class DetectData
-        {
-            [JsonProperty("language")]
-            public string LanguageCode { get; private set; }
+        [JsonProperty("language")]
+        public string LanguageCode { get; private set; }
 
-            [JsonProperty("isReliable")]
-            public bool IsReliable { get; private set; }
+        [JsonProperty("isReliable")]
+        public bool IsReliable { get; private set; }
 
-            [JsonProperty("confidence")]
-            public double Confidence { get; private set; }
-        }
-
-        [JsonProperty("responseData")]
-        public DetectData ResponseData { get; private set; }
+        [JsonProperty("confidence")]
+        public double Confidence { get; private set; }
     }
 }
