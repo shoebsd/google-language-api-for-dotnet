@@ -29,7 +29,7 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 
-namespace Google.API.Translate
+namespace Google.API
 {
     internal abstract class RequestBase
     {
@@ -72,6 +72,9 @@ namespace Google.API.Translate
         [Argument("key?")]
         public string Key { get; private set; }
 
+        /// <summary>
+        /// Get the url string.
+        /// </summary>
         public string UrlString
         {
             get
@@ -84,6 +87,9 @@ namespace Google.API.Translate
             }
         }
 
+        /// <summary>
+        /// Get the uri.
+        /// </summary>
         public Uri Uri
         {
             get
@@ -106,9 +112,25 @@ namespace Google.API.Translate
 
         #region Methods
 
+        /// <summary>
+        /// Get the web request.
+        /// </summary>
+        /// <returns>The web request.</returns>
         public WebRequest GetWebRequest()
         {
             return WebRequest.Create(UrlString);
+        }
+
+        /// <summary>
+        /// Get the web request with time out.
+        /// </summary>
+        /// <param name="timeout">The length of time, in milliseconds, before the request times out.</param>
+        /// <returns>The web request.</returns>
+        public WebRequest GetWebRequest(int timeout)
+        {
+            WebRequest request = GetWebRequest();
+            request.Timeout = timeout;
+            return request;
         }
 
         public override string ToString()
@@ -143,7 +165,7 @@ namespace Google.API.Translate
                 }
                 if (value == null)
                 {
-                    throw new TranslateException(string.Format("Property {0}({1}) cannot be null", info.Name, name));
+                    throw new GoogleAPIException(string.Format("Property {0}({1}) cannot be null", info.Name, name));
                 }
 
                 string valueString = value.ToString();

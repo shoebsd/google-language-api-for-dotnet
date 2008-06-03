@@ -23,10 +23,6 @@
  */
 
 using System;
-using System.IO;
-using System.Net;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace Google.API.Translate
 {
@@ -41,8 +37,6 @@ namespace Google.API.Translate
     /// </summary>
     public class Translator
     {
-        private static readonly Encoding ENCODING = Encoding.UTF8;
-
         /// <summary>
         /// Translate the text from <paramref name="from"/> to <paramref name="to"/>
         /// </summary>
@@ -139,9 +133,9 @@ namespace Google.API.Translate
             TranslateData responseData;
             try
             {
-                responseData = GetResponseData<TranslateData>(request.GetWebRequest());
+                responseData = RequestUtility.GetResponseData<TranslateData>(request.GetWebRequest());
             }
-            catch (TranslateException ex)
+            catch (GoogleAPIException ex)
             {
                 throw new TranslateException(string.Format("request:\"{0}\"", request), ex);
             }
@@ -160,57 +154,14 @@ namespace Google.API.Translate
             DetectData responseData;
             try
             {
-                responseData = GetResponseData<DetectData>(request.GetWebRequest());
+                responseData = RequestUtility.GetResponseData<DetectData>(request.GetWebRequest());
             }
-            catch(TranslateException ex)
+            catch(GoogleAPIException ex)
             {
                 throw new TranslateException(string.Format("request:\"{0}\"", request), ex);
             }
 
             return responseData;
-        }
-
-        internal static T GetResponseData<T>(WebRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException("request");
-            }
-            string resultString;
-            try
-            {
-                using (WebResponse response = request.GetResponse())
-                {
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), ENCODING))
-                    {
-                        resultString = reader.ReadToEnd();
-                    }
-                }
-            }
-            catch (WebException ex)
-            {
-                throw new TranslateException("Failed to get response.", ex);
-            }
-            catch (IOException ex)
-            {
-                throw new TranslateException("Cannot read the response stream.", ex);
-            }
-            ResultObject<T> resultObject = JavaScriptConvert.DeserializeObject<ResultObject<T>>(resultString);
-            if (resultObject.ResponseStatus != 200)
-            {
-                throw new TranslateException(string.Format("[error code:{0}]{1}", resultObject.ResponseStatus, resultObject.ResponseDetails));
-            }
-            return resultObject.ResponseData;
-        }
-
-        internal static T GetResponseData<T>(string url)
-        {
-            if (url == null)
-            {
-                throw new ArgumentNullException("url");
-            }
-            WebRequest request = WebRequest.Create(url);
-            return GetResponseData<T>(request);
         }
     }
 }
