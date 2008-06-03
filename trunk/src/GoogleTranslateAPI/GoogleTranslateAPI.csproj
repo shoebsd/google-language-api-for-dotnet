@@ -59,9 +59,9 @@
     <Compile Include="RequestBase.cs" />
     <Compile Include="RequestUtility.cs" />
     <Compile Include="Translate\TranslateData.cs" />
-    <Compile Include="TranslateException.cs" />
+    <Compile Include="Translate\TranslateException.cs" />
     <Compile Include="Translate\TranslateRequest.cs" />
-    <Compile Include="Translator.cs" />
+    <Compile Include="Translate\Translator.cs" />
     <Compile Include="ResultObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
