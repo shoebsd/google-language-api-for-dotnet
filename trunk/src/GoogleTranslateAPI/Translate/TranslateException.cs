@@ -26,6 +26,9 @@ using System;
 
 namespace Google.API.Translate
 {
+    /// <summary>
+    /// Google API translate exception.
+    /// </summary>
     public class TranslateException : GoogleAPIException
     {
         public TranslateException(string message, Exception innerException)

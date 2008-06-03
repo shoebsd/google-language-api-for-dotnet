@@ -71,7 +71,7 @@ namespace Google.API.Translate.Test
         public void TranslateTestForHtml()
         {
             // TODO : The test case TranslateTestForHtml is not stable. There may add some space after being translated.
-            
+
             Language from = Language.English;
             Language to = Language.Chinese_Simplified;
 
@@ -94,6 +94,20 @@ namespace Google.API.Translate.Test
             StringAssert.AreEqualIgnoringCase(expectedText, translatedText,
                                               string.Format("expected:\t{1}{0}actual:\t{2}", Environment.NewLine,
                                                             expectedText, translatedText));
+        }
+
+        [Test]
+        public void TranslateTestWithDetect()
+        {
+            string text = "I love this game.";
+
+            Language from;
+            Language to = Language.English;
+
+            string translated = Translator.Translate(text, to, out from);
+
+            Assert.AreEqual(Language.English, from);
+            StringAssert.AreEqualIgnoringCase(text, translated);
         }
 
         [Test]
