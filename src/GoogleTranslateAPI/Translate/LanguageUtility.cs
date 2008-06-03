@@ -195,8 +195,8 @@ namespace Google.API.Translate
         /// <summary>
         /// Whether this language is translatable.
         /// </summary>
-        /// <param name="language">the language</param>
-        /// <returns>return true if the language is translatable</returns>
+        /// <param name="language">The language.</param>
+        /// <returns>Return true if the language is translatable.</returns>
         public static bool IsTranslatable(Language language)
         {
             return translatableCollection.Contains(language);
@@ -205,8 +205,8 @@ namespace Google.API.Translate
         /// <summary>
         /// Get language from a language code.
         /// </summary>
-        /// <param name="languageCode">the language code</param>
-        /// <returns>the language of this code or unknown language if of language match this code</returns>
+        /// <param name="languageCode">The language code.</param>
+        /// <returns>The language of this code or unknown language if of language match this code.</returns>
         internal static Language GetLanguage(string languageCode)
         {
             languageCode = languageCode.Trim();
@@ -231,8 +231,8 @@ namespace Google.API.Translate
         /// <summary>
         /// Get the language code of a language.
         /// </summary>
-        /// <param name="language">the language</param>
-        /// <returns>the language code of this language or code for unknown language</returns>
+        /// <param name="language">The language</param>
+        /// <returns>The language code of this language or code for unknown language.</returns>
         internal static string GetLanguageCode(Language language)
         {
             string code;
