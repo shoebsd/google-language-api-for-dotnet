@@ -24,7 +24,7 @@
 
 using Newtonsoft.Json;
 
-namespace Google.API.Translate
+namespace Google.API
 {
     [JsonObject(MemberSerialization.OptOut)]
     internal class ResultObject<T>

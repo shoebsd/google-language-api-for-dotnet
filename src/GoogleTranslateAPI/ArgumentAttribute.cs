@@ -24,7 +24,7 @@
 
 using System;
 
-namespace Google.API.Translate
+namespace Google.API
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public sealed class ArgumentAttribute : Attribute
